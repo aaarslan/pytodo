@@ -1,37 +1,48 @@
-todos = []
-options = {1: "Add todo", 2: "Remove todo", 3: "List todos", 4: "Exit"}
+class TodoApp:
+    def __init__(self):
+        self.todos = []
+        self.options = {1: "Add todo", 2: "Remove todo", 3: "List todos", 4: "Quit"}
+        self.actions = {
+            "a": self.add_todo,
+            "r": self.remove_todo,
+            "l": self.list_todos,
+            "q": self.quit,
+        }
 
+    def add_todo(self):
+        """Add a todo to the list."""
+        user_todo = input("Add a todo: ")
+        self.todos.append(user_todo)
+        return True
 
-def start():
-    def addTodo():
-        userTodo = input("Add a todo: ")
-        todos.append(userTodo)
-        start()
+    def remove_todo(self):
+        """Remove a todo from the list."""
+        print("\n".join([todo for todo in self.todos]))
+        r_todo = input("Pick a todo to remove: ")
+        self.todos.remove(r_todo)
+        return True
 
-    def removeTodo():
-        print("\n".join([todo for todo in todos]))
-        rTodo = input("Pick a todo to remove: ")
-        todos.remove(rTodo)
-        start()
+    def list_todos(self):
+        """List all todos."""
+        print("\n".join([todo for todo in self.todos]))
+        return True
 
-    def listTodo():
-        print("\n".join([todo for todo in todos]))
-        start()
-
-    def exit():
+    def quit(self):
+        """Quit the application."""
         print("Goodbye")
+        return False
 
-    user_text = input(f"What would you like to do? {', '.join(options.values())} ")
-
-    match user_text:
-        case "A" | "a":
-            addTodo()
-        case "R" | "r":
-            removeTodo()
-        case "L" | "l":
-            listTodo()
-        case "E" | "e":
-            exit()
+    def start(self):
+        """Start the application."""
+        while True:
+            user_text = input(
+                f"What would you like to do? {', '.join(self.options.values())} "
+            ).lower()
+            action = self.actions.get(user_text)
+            if action and not action():
+                break
 
 
-start()
+if __name__ == "__main__":
+    app = TodoApp()
+    app.start()
