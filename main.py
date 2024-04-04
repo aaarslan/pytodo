@@ -1,48 +1,60 @@
+import tkinter as tk
+from tkinter import messagebox
+
+
 class TodoApp:
-    def __init__(self):
+    def __init__(self, root):
+        self.root = root
         self.todos = []
-        self.options = {1: "Add todo", 2: "Remove todo", 3: "List todos", 4: "Quit"}
-        self.actions = {
-            "a": self.add_todo,
-            "r": self.remove_todo,
-            "l": self.list_todos,
-            "q": self.quit,
-        }
+        self.setup_ui()
+
+    def setup_ui(self):
+        """Set up the GUI components."""
+        self.root.title("Todo Application")
+
+        # Input field for new todo
+        self.todo_entry = tk.Entry(self.root, width=50)
+        self.todo_entry.pack()
+
+        # Add todo button
+        self.add_button = tk.Button(self.root, text="Add Todo", command=self.add_todo)
+        self.add_button.pack()
+
+        # Listbox to display todos
+        self.todo_listbox = tk.Listbox(self.root, width=50, height=15)
+        self.todo_listbox.pack()
+
+        # Remove todo button
+        self.remove_button = tk.Button(
+            self.root, text="Remove Selected Todo", command=self.remove_todo
+        )
+        self.remove_button.pack()
 
     def add_todo(self):
-        """Add a todo to the list."""
-        user_todo = input("Add a todo: ")
-        self.todos.append(user_todo)
-        return True
+        """Add a todo to the list and refresh the listbox."""
+        todo = self.todo_entry.get()
+        if todo:  # Ensure the todo is not empty
+            self.todos.append(todo)
+            self.todo_entry.delete(0, tk.END)  # Clear the entry field
+            self.refresh_listbox()
 
     def remove_todo(self):
-        """Remove a todo from the list."""
-        print("\n".join([todo for todo in self.todos]))
-        r_todo = input("Pick a todo to remove: ")
-        self.todos.remove(r_todo)
-        return True
+        """Remove the selected todo from the list."""
+        try:
+            index = self.todo_listbox.curselection()[0]  # Get selected index
+            del self.todos[index]
+            self.refresh_listbox()
+        except IndexError:
+            messagebox.showwarning("Warning", "Please select a todo to remove.")
 
-    def list_todos(self):
-        """List all todos."""
-        print("\n".join([todo for todo in self.todos]))
-        return True
-
-    def quit(self):
-        """Quit the application."""
-        print("Goodbye")
-        return False
-
-    def start(self):
-        """Start the application."""
-        while True:
-            user_text = input(
-                f"What would you like to do? {', '.join(self.options.values())} "
-            ).lower()
-            action = self.actions.get(user_text)
-            if action and not action():
-                break
+    def refresh_listbox(self):
+        """Refresh the contents of the listbox."""
+        self.todo_listbox.delete(0, tk.END)  # Clear current items
+        for todo in self.todos:
+            self.todo_listbox.insert(tk.END, todo)
 
 
 if __name__ == "__main__":
-    app = TodoApp()
-    app.start()
+    root = tk.Tk()
+    app = TodoApp(root)
+    root.mainloop()
